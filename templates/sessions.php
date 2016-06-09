@@ -13,7 +13,7 @@
             <?php $first = false; ?>
         <?php endif; ?>
         <li>
-            <a href="<?php echo get_page_link(get_option("sygefor3_training_page"));?>?stage=<?php echo $session['training']['id'];?>&theme=<?php echo $_GET['theme'];?>&search=<?php echo $_GET['search'];?>">
+            <a href="<?php echo get_page_link(get_option("sygefor3_training_page"));?>?stage=<?php echo $session['training']['id'];?>&theme=<?php echo $_GET['theme'];?>&tag=<?php echo $_GET['tag'];?>&search=<?php echo $_GET['search'];?>">
                 <?php echo $session['training']['name'];?>
             </a><br />
             <em style="font-size:15px;margin-left:10px;display:block">
@@ -40,7 +40,30 @@
         </li>
     <?php endforeach; ?>
     </ul>
-</div>
+
+    <div id="pagination" style="text-align: center;">
+        <?php
+        $nbrPage = (int)floor($sessions['total'] / $sessions['pageSize']);
+        $i = 1;
+        while($i <= $nbrPage) {
+            if ($i == $_GET['num'] || !$_GET['num'] && $i === 1) {
+                echo "<strong>";
+            }
+            echo "&nbsp;<a href=" .
+                "?theme=" . $_GET["theme"] .
+                "&tag=" . $_GET['tag'] .
+                "&search=" . $_GET['search'].
+                "&num=" . $i .
+                " title='Page " . $i .
+                "'>" . $i ."</a>&nbsp;";
+            if ($i == $_GET['num'] || !$_GET['num'] && $i === 1) {
+                echo "</strong>";
+            }
+            $i++;
+        } ?>
+    </div>
+
+    </div>
 <?php else: ?>
     <h2>Aucune session trouvée</h2>
 <?php endif; ?>

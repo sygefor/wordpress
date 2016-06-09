@@ -120,11 +120,13 @@ class Sygefor3Viewer
      */
     public function getThemes()
     {
+        $arguments = $this->defaultArguments();
+
         if ($_POST['search']) {
             $_GET['search'] = $_POST['search'];
         }
         $request = new Sygefor3Requester();
-        $sessions = $request->getSessions(null, 0, $_GET['search']);
+        $sessions = $request->getSessions($_GET['search'], NULL, NULL, $arguments);
         return $this->render('themes.php', array('sessions' => $sessions));
     }
 
@@ -134,11 +136,13 @@ class Sygefor3Viewer
      */
     public function getTags()
     {
+        $arguments = $this->defaultArguments();
+
         if ($_POST['search']) {
             $_GET['search'] = $_POST['search'];
         }
         $request = new Sygefor3Requester();
-        $sessions = $request->getSessions(null, 0, $_GET['search']);
+        $sessions = $request->getSessions($_GET['search'], NULL, NULL, $arguments);;
         return $this->render('tags.php', array('sessions' => $sessions));
     }
 
@@ -147,15 +151,18 @@ class Sygefor3Viewer
      * Accessible via shortcode
      * @return mixed
      */
-    public function getSessions()
+    public function getSessions($arguments)
     {
+        $arguments = $this->reformatArguments($arguments);
         if ($_POST['search']) {
             $_GET['search'] = $_POST['search'];
         }
         $request = new Sygefor3Requester();
         $_GET['theme'] = stripslashes($_GET['theme']);
         $_GET['tag'] = stripslashes($_GET['tag']);
-        $sessions = $request->getSessions($_GET['theme'], 999, $_GET['search'], $_GET['tag']);
+        $_GET['num'] = stripslashes($_GET['num']);
+
+        $sessions = $request->getSessions($_GET['search'], $_GET['theme'], $_GET['tag'], $arguments, $_GET['num']);
         $_GET['search'] = stripslashes($_GET['search']);
         return $this->render('sessions.php', array('sessions' => $sessions));
     }
@@ -185,8 +192,10 @@ class Sygefor3Viewer
      * Accessible via shortcode
      * @return mixed
      */
-    public function getCalendar()
+    public function getCalendar($arguments)
     {
+        $arguments = $this->reformatArguments($arguments);
+
         // insert fullcalendar script and styles
         wp_enqueue_style('fullcalendar', plugin_dir_url(__FILE__) . '/fullcalendar-2.4.0/fullcalendar.min.css');
         wp_enqueue_style('qtip', plugin_dir_url(__FILE__) . '/jquery.qtip.custom/jquery.qtip.min.css');
@@ -195,10 +204,49 @@ class Sygefor3Viewer
         $request = new Sygefor3Requester();
         $_GET['theme'] = stripslashes($_GET['theme']);
         $_GET['tag'] = stripslashes($_GET['tag']);
-        $sessions = $request->getSessions($_GET['theme'], 999, $_GET['search'], $_GET['tag']);
+        $sessions = $request->getSessions($_GET['search'], $_GET['theme'], $_GET['tag'], $arguments);;
         $_GET['search'] = stripslashes($_GET['search']);
 
         return $this->render('calendar.php', array('sessions' => $sessions));
+    }
+
+    /**
+     * @param $arguments
+     * @return array
+     */
+    protected function reformatArguments($arguments)
+    {
+        $size = 999;
+        $dateBegin = 0;
+        $dateEnd = 1000;
+
+        if (isset($arguments['pagination']) && intval($arguments['pagination']) > 0) {
+            $size = intval($arguments['pagination']);
+        }
+        if (isset($arguments['datedebut'])) {
+            $dateBegin = intval($arguments['datedebut']);
+        }
+        if (isset($arguments['datefin'])) {
+            $dateEnd = intval($arguments['datefin']);
+        }
+
+        return array(
+            'size' => $size,
+            'dateBegin' => $dateBegin,
+            'dateEnd' => $dateEnd
+        );
+    }
+
+    /**
+     * @return array
+     */
+    protected function defaultArguments()
+    {
+        return array(
+            'size' => 999,
+            'dateBegin' => 0,
+            'dateEnd' => 1000
+        );
     }
 
     /**

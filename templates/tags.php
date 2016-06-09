@@ -10,7 +10,7 @@
                             <b>X <?php echo $tag["term"];?> (<?php echo $tag["count"];?>)</b>
                         </a>
                     <?php else: ?>
-                        <a href="<?php echo get_page_link(get_option("sygefor3_session_list_page"));?>?tag=<?php echo $tag["term"];?>&search=<?php echo $_GET['search'];?>">
+                        <a href="<?php echo get_page_link(get_option("sygefor3_session_list_page"));?>?theme=<?php echo $_GET["theme"];?>&tag=<?php echo $tag["term"];?>&search=<?php echo $_GET['search'];?>">
                             <?php echo $tag["term"];?> (<?php echo $tag["count"];?>)
                         </a>
                     <?php endif; ?>

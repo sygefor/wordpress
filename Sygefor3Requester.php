@@ -32,24 +32,36 @@ class Sygefor3Requester
      * @param null $search
      * @return array|mixed|object
      */
-    public function getSessions($theme = null, $size = 999, $search = null, $tag = null)
+    public function getSessions($search = null, $theme = null, $tag = null, $arguments, $page = 1)
     {
+        $dateBegin = new \DateTime("now", timezone_open('Europe/Paris'));
+        date_add($dateBegin, date_interval_create_from_date_string($arguments['dateBegin'] . ' months'));
+
+        $dateEnd = new \DateTime("now", timezone_open('Europe/Paris'));
+        date_add($dateEnd, date_interval_create_from_date_string($arguments['dateEnd'] . ' months'));
+
+        if ($page < 1) {
+            $page = 1;
+        }
+
         $request = [
             "sort" => ["dateBegin" => "asc"],
-            "size" => $size,
+            "size" => $arguments['size'],
             "query" => [
                 "filtered" => [
                     "filter" => [
                         "and" => [
                             ["term" => ["training.organization.code" => $this->urfistCode]],
-                            ["range" => ["dateBegin" => ["gte" => (new \DateTime("now", timezone_open('Europe/Paris')))->format('Y-m-d')]]]
+                            ["range" => ["dateBegin" => ['gte' => $dateBegin->format('Y-m-d')]]],
+                            ["range" => ["dateEnd" => ['lte' => $dateEnd->format('Y-m-d')]]]
                         ]]
                     ]
             ],
             "facets" => [
                 "theme" => [ "terms" => ["field" => "training.theme.source", "order" => "term"]],
                 "tags" => [ "terms" => ["field" => "training.tags.source"]]
-            ]
+            ],
+            "from" => $arguments['size'] * ($page - 1)
         ];
         if ($theme) {
             $request['query']['filtered']['filter']['and'][] = ["term" => ["training.theme.source" => $theme]];
