@@ -8,6 +8,20 @@
         </div>
     <?php endif; ?>
 
+    <?php if ($training['tags']): ?>
+        <div id="tags">
+            <h3>Tags : </h3>
+            <p>
+                <?php foreach ($training["tags"] as $key => $tag) {
+                    if ($key > 0) {
+                        echo ", ";
+                    }
+                    echo $tag['name'];
+                } ?>
+            </p>
+        </div>
+    <?php endif; ?>
+
     <?php if ($training['objectives'] && !empty($training["objectives"])): ?>
         <div id="objectives">
             <h3>Objectifs</h3>

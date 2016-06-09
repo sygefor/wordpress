@@ -3,6 +3,7 @@
 include_once('Sygefor3Requester.php');
 include_once('SearchWidget.php');
 include_once('ThemeWidget.php');
+include_once('TagWidget.php');
 
 /**
  * Class Sygefor3Viewer
@@ -43,6 +44,7 @@ class Sygefor3Viewer
         // add shortcodes
         add_shortcode('sygefor.recherche', array($this, 'getSearch'));
         add_shortcode('sygefor.theme_filters', array($this, 'getThemes'));
+        add_shortcode('sygefor.tag_filters', array($this, 'getTags'));
         add_shortcode('sygefor.sessions', array($this, 'getSessions'));
         add_shortcode('sygefor.formation', array($this, 'getTraining'));
         add_shortcode('sygefor.agenda_sessions', array($this, 'getCalendar'));
@@ -50,6 +52,7 @@ class Sygefor3Viewer
         // add search and theme widgets
         add_action('widgets_init', array((new SearchWidget()), 'createSearchPlugin'));
         add_action('widgets_init', array((new ThemeWidget()), 'createThemePlugin'));
+        add_action('widgets_init', array((new TagWidget()), 'createTagPlugin'));
 
         // register fullcalendar js and css
         wp_register_script('moment', plugin_dir_url(__FILE__) . '/fullcalendar-2.4.0/moment.min.js');
@@ -126,6 +129,20 @@ class Sygefor3Viewer
     }
 
     /**
+     * Return tag list view
+     * @return string
+     */
+    public function getTags()
+    {
+        if ($_POST['search']) {
+            $_GET['search'] = $_POST['search'];
+        }
+        $request = new Sygefor3Requester();
+        $sessions = $request->getSessions(null, 0, $_GET['search']);
+        return $this->render('tags.php', array('sessions' => $sessions));
+    }
+
+    /**
      * Return session list view
      * Accessible via shortcode
      * @return mixed
@@ -137,7 +154,8 @@ class Sygefor3Viewer
         }
         $request = new Sygefor3Requester();
         $_GET['theme'] = stripslashes($_GET['theme']);
-        $sessions = $request->getSessions($_GET['theme'], 999, $_GET['search']);
+        $_GET['tag'] = stripslashes($_GET['tag']);
+        $sessions = $request->getSessions($_GET['theme'], 999, $_GET['search'], $_GET['tag']);
         $_GET['search'] = stripslashes($_GET['search']);
         return $this->render('sessions.php', array('sessions' => $sessions));
     }
@@ -151,6 +169,7 @@ class Sygefor3Viewer
     {
         $request = new Sygefor3Requester();
         $_GET['theme'] = stripslashes($_GET['theme']);
+        $_GET['tag'] = stripslashes($_GET['tag']);
         $_GET['search'] = stripslashes($_GET['search']);
         $training = $request->getTraining($_GET['stage']);
         if ($training) {
@@ -175,7 +194,8 @@ class Sygefor3Viewer
 
         $request = new Sygefor3Requester();
         $_GET['theme'] = stripslashes($_GET['theme']);
-        $sessions = $request->getSessions($_GET['theme'], 999, $_GET['search']);
+        $_GET['tag'] = stripslashes($_GET['tag']);
+        $sessions = $request->getSessions($_GET['theme'], 999, $_GET['search'], $_GET['tag']);
         $_GET['search'] = stripslashes($_GET['search']);
 
         return $this->render('calendar.php', array('sessions' => $sessions));

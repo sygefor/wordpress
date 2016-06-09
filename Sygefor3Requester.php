@@ -32,7 +32,7 @@ class Sygefor3Requester
      * @param null $search
      * @return array|mixed|object
      */
-    public function getSessions($theme = null, $size = 999, $search = null)
+    public function getSessions($theme = null, $size = 999, $search = null, $tag = null)
     {
         $request = [
             "sort" => ["dateBegin" => "asc"],
@@ -47,14 +47,18 @@ class Sygefor3Requester
                     ]
             ],
             "facets" => [
-                "theme" => [ "terms" => ["field" => "training.theme.source", "order" => "term"]]
+                "theme" => [ "terms" => ["field" => "training.theme.source", "order" => "term"]],
+                "tags" => [ "terms" => ["field" => "training.tags.source"]]
             ]
         ];
         if ($theme) {
             $request['query']['filtered']['filter']['and'][] = ["term" => ["training.theme.source" => $theme]];
         }
+        if ($tag) {
+            $request['query']['filtered']['filter']['and'][] = ["term" => ["training.tags.source" => $tag]];
+        }
         if ($search) {
-            $request['query']["filtered"]["query"]["multi_match"] = ['query' => $search, "fields" => ["training.name", "training.program"]];
+            $request['query']["filtered"]["query"]["multi_match"] = ['query' => $search, "fields" => ["training.name", "training.program", "training.tags"]];
         }
 
         return $this->search("training/session", $request);

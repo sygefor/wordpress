@@ -8,7 +8,7 @@
                 </ul></div>
             <?php endif; ?>
             <div>
-                <h2><?php setlocale (LC_TIME, 'fr_FR.utf-8','fra'); echo ucfirst(utf8_encode(strftime("%B %Y", (new \Datetime($session["dateBegin"]))->getTimestamp())));?></h2>
+            <h2><?php setlocale (LC_TIME, 'fr_FR.utf-8','fra'); echo strftime("%B %Y", (new \Datetime($session["dateBegin"]))->getTimestamp());?></h2>
                 <ul class="sygefor-stages-list">
             <?php $first = false; ?>
         <?php endif; ?>
