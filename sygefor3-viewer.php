@@ -20,5 +20,5 @@ register_activation_hook(__FILE__, 'add_datas');
  * add api URL to db when activate the plugin
  */
 function add_datas() {
-    add_option("sygefor3_api_address", "http://sygefor-app.reseau-urfist.fr/api/");
+    add_option("sygefor3_api_address", "https://sygefor.reseau-urfist.fr/api/");
 }

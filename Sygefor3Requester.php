@@ -2,6 +2,7 @@
 
 /**
  * Make search on sygefor API
+ *
  * Class Sygefor3Requester
  */
 class Sygefor3Requester
@@ -25,13 +26,18 @@ class Sygefor3Requester
         }
     }
 
-    /**
-     * Return sessions
-     * @param null $theme
-     * @param int $size
-     * @param null $search
-     * @return array|mixed|object
-     */
+	/**
+	 * Return sessions
+	 *
+	 * @param null $search
+	 * @param null $theme
+	 * @param null $tag
+	 * @param      $arguments
+	 * @param int  $page
+	 *
+	 * @return array|mixed|object
+	 * @throws Exception
+	 */
     public function getSessions($search = null, $theme = null, $tag = null, $arguments, $page = 1)
     {
         $dateBegin = new \DateTime("now", timezone_open('Europe/Paris'));
@@ -78,8 +84,10 @@ class Sygefor3Requester
 
     /**
      * Return training
+     *
      * @param $id
-     * @return array|mixed|null|object
+     *
+     * @return mixed
      */
     public function getTraining($id)
     {
@@ -92,9 +100,11 @@ class Sygefor3Requester
 
     /**
      * Search on API
+     *
      * @param $address
      * @param $request
-     * @return array|mixed|object
+     *
+     * @return mixed|
      */
     public function search($address, $request)
     {

@@ -53,12 +53,6 @@ class Sygefor3Viewer
         add_action('widgets_init', array((new SearchWidget()), 'createSearchPlugin'));
         add_action('widgets_init', array((new ThemeWidget()), 'createThemePlugin'));
         add_action('widgets_init', array((new TagWidget()), 'createTagPlugin'));
-
-        // register fullcalendar js and css
-        wp_register_script('moment', plugin_dir_url(__FILE__) . '/fullcalendar-2.4.0/moment.min.js');
-        wp_register_script('qtip', plugin_dir_url(__FILE__) . '/jquery.qtip.custom/jquery.qtip.min.js');
-        wp_register_script('fullcalendarLang', plugin_dir_url(__FILE__) . '/fullcalendar-2.4.0/fr.js');
-        wp_register_script('fullcalendar', plugin_dir_url(__FILE__) . '/fullcalendar-2.4.0/fullcalendar.min.js', array('jquery', 'moment', 'qtip'));
     }
 
     /**
@@ -107,6 +101,7 @@ class Sygefor3Viewer
 
     /**
      * Return training search form view
+     *
      * @return string
      */
     public function getSearch()
@@ -114,70 +109,96 @@ class Sygefor3Viewer
         return $this->render('search.php');
     }
 
-    /**
-     * Return theme list view
-     * @return string
-     */
+	/**
+	 * Return theme list view
+	 *
+	 * @return string
+	 * @throws Exception
+	 */
     public function getThemes()
     {
         $arguments = $this->defaultArguments();
 
-        if ($_POST['search']) {
+        if (isset($_POST['search'])) {
             $_GET['search'] = $_POST['search'];
         }
+	    $_GET['search'] = isset($_GET['search']) ? $_GET['search'] : null;
+	    $_GET['theme'] = isset($_GET['theme']) ? $_GET['theme'] : null;
+	    $_GET['tag'] = isset($_GET['tag']) ? $_GET['tag'] : null;
+
         $request = new Sygefor3Requester();
         $sessions = $request->getSessions($_GET['search'], NULL, NULL, $arguments);
         return $this->render('themes.php', array('sessions' => $sessions));
     }
 
-    /**
-     * Return tag list view
-     * @return string
-     */
+	/**
+	 *
+	 * Return tag list view
+	 *
+	 * @return string
+	 * @throws Exception
+	 */
     public function getTags()
     {
         $arguments = $this->defaultArguments();
 
-        if ($_POST['search']) {
+        if (isset($_POST['search'])) {
             $_GET['search'] = $_POST['search'];
         }
+	    $_GET['search'] = isset($_GET['search']) ? $_GET['search'] : null;
+	    $_GET['theme'] = isset($_GET['theme']) ? $_GET['theme'] : null;
+	    $_GET['tag'] = isset($_GET['tag']) ? $_GET['tag'] : null;
+
         $request = new Sygefor3Requester();
         $sessions = $request->getSessions($_GET['search'], NULL, NULL, $arguments);;
         return $this->render('tags.php', array('sessions' => $sessions));
     }
 
-    /**
-     * Return session list view
-     * Accessible via shortcode
-     * @return mixed
-     */
+	/**
+	 * Return session list view
+	 * Accessible via shortcode
+	 *
+	 * @param $arguments
+	 *
+	 * @return string
+	 * @throws Exception
+	 */
     public function getSessions($arguments)
     {
         $arguments = $this->reformatArguments($arguments);
-        if ($_POST['search']) {
+        if (isset($_POST['search'])) {
             $_GET['search'] = $_POST['search'];
         }
         $request = new Sygefor3Requester();
-        $_GET['theme'] = stripslashes($_GET['theme']);
-        $_GET['tag'] = stripslashes($_GET['tag']);
-        $_GET['num'] = stripslashes($_GET['num']);
+        $_GET['search'] = isset($_GET['search']) ? $_GET['search'] : null;
+        $_GET['theme'] = isset($_GET['theme']) ? $_GET['theme'] : null;
+        $_GET['tag'] = isset($_GET['tag']) ? $_GET['tag'] : null;
+        $_GET['num'] = isset($_GET['num']) ? $_GET['num'] : null;
 
-        $sessions = $request->getSessions($_GET['search'], $_GET['theme'], $_GET['tag'], $arguments, $_GET['num']);
-        $_GET['search'] = stripslashes($_GET['search']);
+        $sessions = $request->getSessions(
+        	stripslashes($_GET['search']),
+	        stripslashes($_GET['theme']),
+	        stripslashes($_GET['tag']),
+	        $arguments,
+	        $_GET['num']
+        );
         return $this->render('sessions.php', array('sessions' => $sessions));
     }
 
-    /**
-     * Return training view
-     * Accessible via shortcode
-     * @return mixed
-     */
+	/**
+	 * Return training view
+	 * Accessible via shortcode
+	 *
+	 * @return string
+	 * @throws Exception
+	 */
     public function getTraining()
     {
         $request = new Sygefor3Requester();
-        $_GET['theme'] = stripslashes($_GET['theme']);
-        $_GET['tag'] = stripslashes($_GET['tag']);
-        $_GET['search'] = stripslashes($_GET['search']);
+	    $_GET['search'] = isset($_GET['search']) ? $_GET['search'] : null;
+	    $_GET['theme'] = isset($_GET['theme']) ? $_GET['theme'] : null;
+	    $_GET['tag'] = isset($_GET['tag']) ? $_GET['tag'] : null;
+	    $_GET['num'] = isset($_GET['num']) ? $_GET['num'] : null;
         $training = $request->getTraining($_GET['stage']);
         if ($training) {
             $training['sessions'] = $this->filterSessionsByDate($training['sessions']);
@@ -187,11 +208,15 @@ class Sygefor3Viewer
         return $this->render('training.php', array('training' => $training, 'session' => $session));
     }
 
-    /**
-     * Return calendar view with session events
-     * Accessible via shortcode
-     * @return mixed
-     */
+	/**
+	 * Return calendar view with session events
+	 * Accessible via shortcode
+	 *
+	 * @param $arguments
+	 *
+	 * @return string
+	 * @throws Exception
+	 */
     public function getCalendar($arguments)
     {
         $arguments = $this->reformatArguments($arguments);
@@ -201,17 +226,23 @@ class Sygefor3Viewer
         wp_enqueue_style('qtip', plugin_dir_url(__FILE__) . '/jquery.qtip.custom/jquery.qtip.min.css');
         wp_enqueue_script('sessionsCalendar', plugin_dir_url(__FILE__) . '/templates/sessionCalendar.js', array('fullcalendar', 'fullcalendarLang'));
 
+	    wp_register_script('moment', plugin_dir_url(__FILE__) . '/fullcalendar-2.4.0/moment.min.js');
+	    wp_register_script('qtip', plugin_dir_url(__FILE__) . '/jquery.qtip.custom/jquery.qtip.min.js');
+	    wp_register_script('fullcalendarLang', plugin_dir_url(__FILE__) . '/fullcalendar-2.4.0/fr.js');
+	    wp_register_script('fullcalendar', plugin_dir_url(__FILE__) . '/fullcalendar-2.4.0/fullcalendar.min.js', array('jquery', 'moment', 'qtip'));
+
         $request = new Sygefor3Requester();
-        $_GET['theme'] = stripslashes($_GET['theme']);
-        $_GET['tag'] = stripslashes($_GET['tag']);
-        $sessions = $request->getSessions($_GET['search'], $_GET['theme'], $_GET['tag'], $arguments);;
-        $_GET['search'] = stripslashes($_GET['search']);
+        $_GET['search'] = isset($_GET['search']) ? stripslashes($_GET['search']) : null;
+        $_GET['theme'] = isset($_GET['theme']) ? stripslashes($_GET['theme']) : null;
+        $_GET['tag'] = isset($_GET['tag']) ? stripslashes($_GET['tag']) : null;
+        $sessions = $request->getSessions($_GET['search'], $_GET['theme'], $_GET['tag'], $arguments);
 
         return $this->render('calendar.php', array('sessions' => $sessions));
     }
 
     /**
      * @param $arguments
+     *
      * @return array
      */
     protected function reformatArguments($arguments)
@@ -251,8 +282,10 @@ class Sygefor3Viewer
 
     /**
      * Render template, search if templateFile exists in current theme
+     *
      * @param $templateName
      * @param array $params
+     *
      * @return string
      */
     public function render($templateName, $params = array())
@@ -272,11 +305,14 @@ class Sygefor3Viewer
         return $content;
     }
 
-    /**
-     * Return only sessions with a date superior to now
-     * @param $sessions
-     * @return array
-     */
+	/**
+	 * Return only sessions with a date superior to now
+	 *
+	 * @param $sessions
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
     protected function filterSessionsByDate($sessions)
     {
         $arraySessions = array();

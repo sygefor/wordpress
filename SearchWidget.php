@@ -29,9 +29,10 @@ class SearchWidget extends WP_Widget
     }
 
     /**
+     * @param array $args
      * @param array $instance
      */
-    public function widget($instance)
+    public function widget($args, $instance)
     {
         $viewer = Sygefor3Viewer::get_instance();
         echo $viewer->getSearch();

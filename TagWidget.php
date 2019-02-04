@@ -28,10 +28,13 @@ class TagWidget extends WP_Widget
         register_widget('TagWidget');
     }
 
-    /**
-     * @param array $instance
-     */
-    public function widget($instance)
+	/**
+	 * @param array $args
+	 * @param array $instance
+	 *
+	 * @throws Exception
+	 */
+	public function widget($args, $instance)
     {
         $viewer = Sygefor3Viewer::get_instance();
         echo $viewer->getTags();

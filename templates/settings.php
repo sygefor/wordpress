@@ -12,7 +12,7 @@
                         <option <?php if ($code === null ) echo 'selected' ; ?> value=null>Aucun</option>
                         <option <?php if ($code === "bordeaux" ) echo 'selected' ; ?> value="bordeaux">Bordeaux</option>
                         <option <?php if ($code === "lyon" ) echo 'selected' ; ?> value="lyon">Lyon</option>
-                        <option <?php if ($code === "nice" ) echo 'selected' ; ?> value="nice">Nice</option>
+                        <option <?php if ($code === "nice" ) echo 'selected' ; ?> value="nice">Méditerranée</option>
                         <option <?php if ($code === "paris" ) echo 'selected' ; ?> value="paris">Paris</option>
                         <option <?php if ($code === "rennes" ) echo 'selected' ; ?> value="rennes">Rennes</option>
                         <option <?php if ($code === "strasbourg" ) echo 'selected' ; ?> value="strasbourg">Strasbourg</option>
