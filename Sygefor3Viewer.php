@@ -317,7 +317,7 @@ class Sygefor3Viewer
     {
         $arraySessions = array();
         foreach ($sessions as $session) {
-            if ((new \Datetime($session['dateBegin'])) >= (new \Datetime("now"))) {
+            if ((new \Datetime($session['dateBegin']))->format('Ymd') >= (new \Datetime("now"))->format('Ymd')) {
                 $arraySessions[] = $session;
             }
         }
