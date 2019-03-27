@@ -22,6 +22,22 @@
                 <?php else: ?>
                 Du <?php echo (new \Datetime($session["dateBegin"]))->format("d/m/Y");?> au <?php echo (new \Datetime($session["dateEnd"]))->format("d/m/Y");?><br />
                 <?php endif; ?>
+                <?php if (isset($session["scheduleString"]) && !empty($session["scheduleString"])) :?>
+                  Horaires : <?php echo $session["scheduleString"]; ?><br/>
+                <?php endif; ?>
+                <?php if (!empty($session["rooms"])) {
+                    if (count($session["rooms"]) === 1) {
+                      echo 'Lieu : ' . $session["rooms"][0]['name'];
+                    }
+                    else {
+                      echo 'Lieux disponibles : ';
+                      $i = 0;
+                      foreach ($session["rooms"] as $room) {
+                          echo ($i++ > 0 ? ', ' : '') . $room['name'];
+                      }
+                    }
+                  echo '</br>';
+                } ?>
                 Thème : <?php echo $session["training"]['theme'];?><br />
                 <?php if(count($session["training"]["publicTypes"]) > 0): ?>
                     Public<?php if(count($session["training"]["publicTypes"]) > 1) { echo "s"; }?> :
