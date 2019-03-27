@@ -84,7 +84,7 @@
 		            <?php echo isset($session["scheduleString"]) ? $session["scheduleString"] . '</br>' : null; ?>
 		            <?php if (!empty($session["rooms"])) {
 		            	  if (count($session["rooms"]) === 1) {
-		            	  	echo '<p>Salle : </br>' . $session["rooms"][0]['name'] . '</p>';
+		            	  	echo '<p>Salle : ' . $session["rooms"][0]['name'] . '</p>';
 			              }
 		            	  else {
 		            	  	echo '<p>Salles disponibles :</p><ul>';
